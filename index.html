@@ -309,8 +309,8 @@
           <input type="date" id="f-tanggal">
         </div>
         <div class="field-row">
-          <div class="field-label">NIK Driver <span style="color:var(--red)">*</span></div>
-          <input type="text" id="f-id-driver" placeholder="Nomor Induk Kependudukan">
+          <div class="field-label">NIK Karyawan <span style="color:var(--red)">*</span></div>
+          <input type="text" id="f-id-driver" placeholder="Nomor Induk Karyawan">
         </div>
       </div>
       <div class="field-row">
@@ -460,7 +460,7 @@ function showToast(msg) {
 
 function validate() {
   if (!document.getElementById('f-tanggal').value) { showToast('Tanggal penilaian wajib diisi'); return false; }
-  if (!document.getElementById('f-id-driver').value.trim()) { showToast('NIK driver wajib diisi'); return false; }
+  if (!document.getElementById('f-id-driver').value.trim()) { showToast('NIK Karyawan wajib diisi'); return false; }
   if (!document.getElementById('f-nopol').value.trim()) { showToast('Nopol kendaraan wajib diisi'); return false; }
   if (Object.keys(ratings).length < 8) { showToast('Lengkapi semua 8 aspek penilaian'); return false; }
   return true;
@@ -475,7 +475,7 @@ async function submitForm() {
 
   const payload = {
     tanggal: document.getElementById('f-tanggal').value,
-    nikDriver: document.getElementById('f-id-driver').value.trim(),
+    nikKaryawan: document.getElementById('f-id-driver').value.trim(),
     namaDriver: document.getElementById('f-nama-driver').value.trim(),
     nopol: document.getElementById('f-nopol').value.trim().toUpperCase(),
     kodeKendaraan: document.getElementById('f-kode-kendaraan').value.trim(),
@@ -522,7 +522,7 @@ async function submitForm() {
 
   const chips = document.getElementById('res-chips');
   chips.innerHTML = `
-    <span class="result-chip chip-green">NIK: ${payload.nikDriver}</span>
+    <span class="result-chip chip-green">NIK: ${payload.nikKaryawan}</span>
     <span class="result-chip" style="background:var(--blue-light);color:var(--blue-dark);">Nopol: ${payload.nopol}</span>
   `;
 

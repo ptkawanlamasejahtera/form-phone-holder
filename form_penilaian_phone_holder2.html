@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Penilaian Phone Holder Driver</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-dark: #0C447C;
+    --green: #3B6D11;
+    --green-light: #EAF3DE;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --gray-bg: #F8F8F7;
+    --gray-border: #E0DFD8;
+    --gray-text: #6B6A65;
+    --text: #1A1A18;
+    --white: #ffffff;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--gray-bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .page-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .page-header {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-border);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-icon {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--blue-light);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .header-icon svg { width: 24px; height: 24px; stroke: var(--blue); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .header-title { font-size: 17px; font-weight: 600; }
+  .header-sub { font-size: 13px; color: var(--gray-text); margin-top: 3px; }
+
+  /* Config section */
+  .section {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gray-text);
+    margin-bottom: 1rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-border);
+  }
+
+  .field-row { margin-bottom: 14px; }
+  .field-row:last-child { margin-bottom: 0; }
+  .field-label { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+  .field-hint { font-size: 12px; color: var(--gray-text); margin-top: 4px; }
+
+  input[type="text"], input[type="date"], select, textarea {
+    width: 100%;
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--white);
+    outline: none;
+    transition: border-color .15s;
+  }
+  input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(24,95,165,.12);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Aspects */
+  .aspect-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .aspect-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .aspect-num { font-size: 12px; color: var(--gray-text); width: 20px; flex-shrink: 0; font-weight: 600; }
+  .aspect-label { font-size: 14px; flex: 1; line-height: 1.4; }
+  .rating-group { display: flex; gap: 5px; flex-shrink: 0; }
+  .rating-btn {
+    width: 34px; height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-border);
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--gray-text);
+    transition: all .12s;
+  }
+  .rating-btn:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+  .rating-btn.sel { background: var(--blue); border-color: var(--blue); color: var(--white); }
+
+  /* Score bar */
+  .score-bar {
+    display: none;
+    background: var(--blue-light);
+    border: 1px solid #B5D4F4;
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    gap: 20px;
+  }
+  .score-bar.show { display: flex; }
+  .score-item { text-align: center; }
+  .score-val { font-size: 24px; font-weight: 700; color: var(--blue-dark); }
+  .score-lbl { font-size: 11px; color: var(--blue); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+  .score-divider { width: 1px; background: #B5D4F4; height: 42px; }
+  .score-grade { flex: 1; display: flex; justify-content: flex-end; }
+  .grade-pill {
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* Boolean */
+  .bool-q { font-size: 14px; font-weight: 500; margin-bottom: 10px; }
+  .bool-options { display: flex; gap: 8px; margin-bottom: 10px; }
+  .bool-btn {
+    flex: 1; padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-border);
+    background: var(--white);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; color: var(--gray-text);
+    transition: all .12s;
+    display: flex; align-items: center; gap: 7px; justify-content: center;
+  }
+  .bool-btn:hover { background: var(--gray-bg); }
+  .bool-btn.yes-sel { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .bool-btn.no-sel { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .criteria-box { display: none; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; line-height: 1.7; }
+  .criteria-box.show { display: block; }
+  .criteria-box.good { background: var(--green-light); border: 1px solid #C0DD97; color: #27500A; }
+  .criteria-box.bad { background: var(--red-light); border: 1px solid #F7C1C1; color: #791F1F; }
+  .criteria-item { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 3px; }
+  .ci-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* Buttons */
+  .btn-primary {
+    width: 100%;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--blue);
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { background: #B5D4F4; cursor: not-allowed; }
+  .btn-secondary {
+    width: 100%;
+    padding: 11px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-border);
+    background: var(--white);
+    color: var(--gray-text);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+    transition: background .15s;
+  }
+  .btn-secondary:hover { background: var(--gray-bg); }
+
+  /* Config panel */
+  .config-panel {
+    background: #FFFBF0;
+    border: 1px solid #FAC775;
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .config-title { font-size: 14px; font-weight: 600; color: var(--amber); margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+  .config-desc { font-size: 12px; color: #633806; margin-bottom: 12px; line-height: 1.5; }
+  .config-steps { font-size: 12px; color: #633806; }
+  .config-steps ol { padding-left: 18px; }
+  .config-steps li { margin-bottom: 4px; }
+  code {
+    background: rgba(0,0,0,.07);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: monospace;
+  }
+
+  /* Result panel */
+  .result-panel {
+    display: none;
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  .result-panel.show { display: block; }
+  .result-big { font-size: 56px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .result-max { font-size: 15px; color: var(--gray-text); margin-bottom: 12px; }
+  .result-grade-wrap { margin-bottom: 1.5rem; }
+  .result-chips { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .result-chip { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; }
+  .chip-green { background: var(--green-light); color: var(--green); }
+  .chip-red { background: var(--red-light); color: var(--red); }
+  .result-note { font-size: 13px; color: var(--gray-text); background: var(--gray-bg); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 1.5rem; text-align: left; }
+  .result-status { font-size: 14px; margin-bottom: 1.5rem; }
+  .status-ok { color: var(--green); font-weight: 600; }
+  .status-err { color: var(--red); font-weight: 600; }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1A1A18;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: transform .3s ease;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"/></svg>
+    </div>
+    <div>
+      <div class="header-title">Form Penilaian — Phone Holder Driver</div>
+      <div class="header-sub">Evaluasi kualitas &amp; keamanan penggunaan phone holder saat berkendara</div>
+    </div>
+  </div>
+
+  <div id="form-area">
+
+    <!-- Info Driver -->
+    <div class="section">
+      <div class="section-title">Informasi Driver &amp; Kendaraan</div>
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label">Tanggal Penilaian <span style="color:var(--red)">*</span></div>
+          <input type="date" id="f-tanggal">
+        </div>
+        <div class="field-row">
+          <div class="field-label">NIK Driver <span style="color:var(--red)">*</span></div>
+          <input type="text" id="f-id-driver" placeholder="Nomor Induk Kependudukan">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-label">Nama Driver</div>
+        <input type="text" id="f-nama-driver" placeholder="Nama driver">
+      </div>
+      <div class="two-col">
+        <div class="field-row">
+          <div class="field-label">Nopol Kendaraan <span style="color:var(--red)">*</span></div>
+          <input type="text" id="f-nopol" placeholder="Misal: B 1234 ABC" style="text-transform:uppercase;">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Kode Kendaraan</div>
+          <input type="text" id="f-kode-kendaraan" placeholder="Misal: MTR-01, MOB-02">
+        </div>
+      </div>
+    </div>
+
+    <!-- Aspek Penilaian -->
+    <div class="section">
+      <div class="section-title">Aspek Penilaian (Nilai 1–5)</div>
+      <div id="aspects-container"></div>
+    </div>
+
+    <!-- Score Bar -->
+    <div class="score-bar" id="score-bar">
+      <div class="score-item">
+        <div class="score-val" id="sb-total">0</div>
+        <div class="score-lbl">Total</div>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-item">
+        <div class="score-val" id="sb-avg">0.0</div>
+        <div class="score-lbl">Rata-rata</div>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-item">
+        <div class="score-val" id="sb-filled">0/8</div>
+        <div class="score-lbl">Terisi</div>
+      </div>
+      <div class="score-grade">
+        <span class="grade-pill" id="sb-grade"></span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="submit-btn" onclick="submitForm()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Simpan &amp; Kirim ke Google Sheets
+    </button>
+    <button class="btn-secondary" onclick="resetForm()">Reset Form</button>
+
+  </div>
+
+  <!-- Result Panel -->
+  <div class="result-panel" id="result-panel">
+    <div class="result-big" id="res-score" style="color:var(--blue)"></div>
+    <div class="result-max">dari 40 poin</div>
+    <div class="result-grade-wrap"><span class="grade-pill" id="res-grade-pill"></span></div>
+    <div class="result-chips" id="res-chips"></div>
+    <div class="result-note" id="res-note" style="display:none"></div>
+    <div class="result-status" id="res-status"></div>
+    <button class="btn-primary" onclick="resetForm()" style="max-width:280px; margin:0 auto;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Penilaian Baru
+    </button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ASPECTS = [
+  "Posisi HP mudah terlihat untuk navigasi",
+  "Tidak mengganggu pandangan ke jalan",
+  "HP stabil / tidak goyang saat jalan rusak",
+  "HP tidak jatuh / terlepas",
+  "Mudah memasang & melepas HP",
+  "Tidak mengganggu aktivitas mengemudi",
+  "Nyaman digunakan selama perjalanan",
+  "Layak digunakan dan membantu driver"
+];
+
+const ratings = {};
+
+// Set default date to today
+document.getElementById('f-tanggal').valueAsDate = new Date();
+
+function renderAspects() {
+  const c = document.getElementById('aspects-container');
+  c.innerHTML = '';
+  ASPECTS.forEach((label, i) => {
+    const row = document.createElement('div');
+    row.className = 'aspect-row';
+    row.innerHTML = `
+      <span class="aspect-num">${i+1}</span>
+      <span class="aspect-label">${label}</span>
+      <div class="rating-group" id="rg-${i}">
+        ${[1,2,3,4,5].map(v=>`<button class="rating-btn" onclick="setRating(${i},${v})">${v}</button>`).join('')}
+      </div>`;
+    c.appendChild(row);
+  });
+}
+
+function setRating(idx, val) {
+  ratings[idx] = val;
+  document.querySelectorAll(`#rg-${idx} .rating-btn`).forEach((b,i)=>{
+    b.classList.toggle('sel', i+1===val);
+  });
+  updateScoreBar();
+}
+
+function getGrade(total, filled) {
+  if (filled < 8) return null;
+  if (total >= 36) return {label:'Sangat Baik', bg:'#EAF3DE', color:'#27500A'};
+  if (total >= 28) return {label:'Baik', bg:'#E6F1FB', color:'#0C447C'};
+  if (total >= 20) return {label:'Cukup', bg:'#FAEEDA', color:'#412402'};
+  return {label:'Perlu Perbaikan', bg:'#FCEBEB', color:'#791F1F'};
+}
+
+function updateScoreBar() {
+  const filled = Object.keys(ratings).length;
+  const total = Object.values(ratings).reduce((a,b)=>a+b, 0);
+  const avg = filled > 0 ? (total/filled) : 0;
+  document.getElementById('sb-total').textContent = total;
+  document.getElementById('sb-avg').textContent = avg.toFixed(1);
+  document.getElementById('sb-filled').textContent = filled+'/8';
+  const bar = document.getElementById('score-bar');
+  if (filled > 0) bar.classList.add('show'); else bar.classList.remove('show');
+  const pill = document.getElementById('sb-grade');
+  const g = getGrade(total, filled);
+  if (g) {
+    pill.textContent = g.label;
+    pill.style.background = g.bg;
+    pill.style.color = g.color;
+  } else {
+    pill.textContent = '';
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function validate() {
+  if (!document.getElementById('f-tanggal').value) { showToast('Tanggal penilaian wajib diisi'); return false; }
+  if (!document.getElementById('f-id-driver').value.trim()) { showToast('NIK driver wajib diisi'); return false; }
+  if (!document.getElementById('f-nopol').value.trim()) { showToast('Nopol kendaraan wajib diisi'); return false; }
+  if (Object.keys(ratings).length < 8) { showToast('Lengkapi semua 8 aspek penilaian'); return false; }
+  return true;
+}
+
+async function submitForm() {
+  if (!validate()) return;
+
+  const total = Object.values(ratings).reduce((a,b)=>a+b, 0);
+  const avg = (total/8).toFixed(2);
+  const g = getGrade(total, 8);
+
+  const payload = {
+    tanggal: document.getElementById('f-tanggal').value,
+    nikDriver: document.getElementById('f-id-driver').value.trim(),
+    namaDriver: document.getElementById('f-nama-driver').value.trim(),
+    nopol: document.getElementById('f-nopol').value.trim().toUpperCase(),
+    kodeKendaraan: document.getElementById('f-kode-kendaraan').value.trim(),
+    r1: ratings[0], r2: ratings[1], r3: ratings[2], r4: ratings[3],
+    r5: ratings[4], r6: ratings[5], r7: ratings[6], r8: ratings[7],
+    totalSkor: total,
+    rataRata: avg,
+    predikat: g ? g.label : '-'
+  };
+
+  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzVEU_k5U9SyxP6yEWFV9fxIS7q8TSfsWaO_1B83_9Ds51P1qRU1Ggf28CdFlBw51Bx/exec';
+
+  const gsUrl = SHEETS_URL || localStorage.getItem('gs_url') || '';
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Mengirim...';
+
+  let statusHtml = '';
+  if (gsUrl && gsUrl.startsWith('https://')) {
+    try {
+      await fetch(gsUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      statusHtml = '<span class="status-ok">✓ Data berhasil dikirim ke Google Sheets</span>';
+    } catch(e) {
+      statusHtml = '<span class="status-err">⚠ Gagal mengirim ke Google Sheets. Periksa URL dan coba lagi.</span>';
+    }
+  } else {
+    statusHtml = '<span style="color:var(--amber)">⚠ URL Google Sheets belum dikonfigurasi. Data tidak dikirim.</span>';
+  }
+
+  // Show result
+  document.getElementById('form-area').style.display = 'none';
+  const panel = document.getElementById('result-panel');
+  panel.style.display = 'block';
+
+  document.getElementById('res-score').textContent = total;
+  const gPill = document.getElementById('res-grade-pill');
+  if (g) { gPill.textContent = g.label; gPill.style.background = g.bg; gPill.style.color = g.color; }
+
+  const chips = document.getElementById('res-chips');
+  chips.innerHTML = `
+    <span class="result-chip chip-green">NIK: ${payload.nikDriver}</span>
+    <span class="result-chip" style="background:var(--blue-light);color:var(--blue-dark);">Nopol: ${payload.nopol}</span>
+  `;
+
+  document.getElementById('res-status').innerHTML = statusHtml;
+}
+
+function resetForm() {
+  Object.keys(ratings).forEach(k => delete ratings[k]);
+  renderAspects();
+  document.getElementById('f-id-driver').value = '';
+  document.getElementById('f-nama-driver').value = '';
+  document.getElementById('f-nopol').value = '';
+  document.getElementById('f-kode-kendaraan').value = '';
+  document.getElementById('f-tanggal').valueAsDate = new Date();
+  document.getElementById('score-bar').classList.remove('show');
+  document.getElementById('result-panel').style.display = 'none';
+  document.getElementById('form-area').style.display = 'block';
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Simpan & Kirim ke Google Sheets`;
+}
+
+// Init
+window.addEventListener('DOMContentLoaded', () => {
+  renderAspects();
+});
+</script>
+</body>
+</html>

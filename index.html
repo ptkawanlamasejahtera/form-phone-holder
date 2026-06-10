@@ -116,20 +116,22 @@
   .aspect-row:last-child { border-bottom: none; padding-bottom: 0; }
   .aspect-num { font-size: 12px; color: var(--gray-text); width: 20px; flex-shrink: 0; font-weight: 600; }
   .aspect-label { font-size: 14px; flex: 1; line-height: 1.4; }
-  .rating-group { display: flex; gap: 5px; flex-shrink: 0; }
+  .rating-group { display: flex; gap: 2px; flex-shrink: 0; }
   .rating-btn {
-    width: 34px; height: 34px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--gray-border);
-    background: var(--white);
-    font-size: 13px;
-    font-weight: 600;
+    width: 32px; height: 32px;
+    border: none;
+    background: transparent;
+    font-size: 22px;
     cursor: pointer;
-    color: var(--gray-text);
-    transition: all .12s;
+    color: #D1CFC7;
+    transition: color .12s, transform .1s;
+    padding: 0;
+    line-height: 1;
   }
-  .rating-btn:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
-  .rating-btn.sel { background: var(--blue); border-color: var(--blue); color: var(--white); }
+  .rating-btn:hover { transform: scale(1.15); }
+  .rating-btn.sel { color: #F5A623; }
+  .rating-group:hover .rating-btn { color: #F5A623; }
+  .rating-group .rating-btn:hover ~ .rating-btn { color: #D1CFC7; }
 
   /* Score bar */
   .score-bar {
@@ -356,6 +358,12 @@
       </div>
     </div>
 
+    <!-- Catatan -->
+    <div class="section">
+      <div class="field-label" style="margin-bottom:6px;">Catatan <span style="color:var(--gray-text); font-weight:400;">(opsional)</span></div>
+      <textarea id="f-catatan" placeholder="Tuliskan observasi atau catatan tambahan..."></textarea>
+    </div>
+
     <button class="btn-primary" id="submit-btn" onclick="submitForm()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       Simpan &amp; Kirim ke Google Sheets
@@ -409,7 +417,7 @@ function renderAspects() {
       <span class="aspect-num">${i+1}</span>
       <span class="aspect-label">${label}</span>
       <div class="rating-group" id="rg-${i}">
-        ${[1,2,3,4,5].map(v=>`<button class="rating-btn" onclick="setRating(${i},${v})">${v}</button>`).join('')}
+        ${[1,2,3,4,5].map(v=>`<button class="rating-btn" onclick="setRating(${i},${v})" title="Nilai ${v}">★</button>`).join('')}
       </div>`;
     c.appendChild(row);
   });
@@ -418,7 +426,7 @@ function renderAspects() {
 function setRating(idx, val) {
   ratings[idx] = val;
   document.querySelectorAll(`#rg-${idx} .rating-btn`).forEach((b,i)=>{
-    b.classList.toggle('sel', i+1===val);
+    b.classList.toggle('sel', i+1<=val);
   });
   updateScoreBar();
 }
@@ -483,7 +491,8 @@ async function submitForm() {
     r5: ratings[4], r6: ratings[5], r7: ratings[6], r8: ratings[7],
     totalSkor: total,
     rataRata: avg,
-    predikat: g ? g.label : '-'
+    predikat: g ? g.label : '-',
+    catatan: document.getElementById('f-catatan').value.trim()
   };
 
   const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzVEU_k5U9SyxP6yEWFV9fxIS7q8TSfsWaO_1B83_9Ds51P1qRU1Ggf28CdFlBw51Bx/exec';
@@ -527,11 +536,20 @@ async function submitForm() {
   `;
 
   document.getElementById('res-status').innerHTML = statusHtml;
+
+  const noteEl = document.getElementById('res-note');
+  if (payload.catatan) {
+    noteEl.style.display = 'block';
+    noteEl.innerHTML = '<strong>Catatan:</strong> ' + payload.catatan;
+  } else {
+    noteEl.style.display = 'none';
+  }
 }
 
 function resetForm() {
   Object.keys(ratings).forEach(k => delete ratings[k]);
   renderAspects();
+  document.getElementById('f-catatan').value = '';
   document.getElementById('f-id-driver').value = '';
   document.getElementById('f-nama-driver').value = '';
   document.getElementById('f-nopol').value = '';
